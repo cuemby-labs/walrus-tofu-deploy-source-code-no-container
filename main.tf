@@ -25,6 +25,10 @@ resource "kubernetes_manifest" "no_container_image" {
       }
     }
   }
+  field_manager {
+    name            = "terraform"
+    force_conflicts = true
+  }
 }
 
 # resource "kaniko_image" "image" {
