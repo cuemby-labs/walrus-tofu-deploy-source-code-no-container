@@ -56,11 +56,11 @@ variable "git_password" {
 # }
 # @label "Dockerfile Path"
 # @group "Build"
-variable "dockerfile" {
-  type        = string
-  default     = "Dockerfile"
-  description = "Path to the Dockerfile."
-}
+# variable "dockerfile" {
+#   type        = string
+#   default     = "Dockerfile"
+#   description = "Path to the Dockerfile."
+# }
 # @label "Registry Authentication"
 # @group "Build"
 variable "registry_auth" {
