@@ -22,53 +22,16 @@ resource "kubectl_manifest" "no_container_image" {
   yaml_body = each.value
 }
 
-# resource "kubernetes_manifest" "no_container_image" {
-#   manifest = {
-#     apiVersion = "kpack.io/v1alpha2"
-#     kind       = "Image"
-#     metadata = {
-#       name      = var.name
-#       namespace = "kpack"
-#     }
-#     spec = {
-#       tag                = "${var.registry_server}/${var.image}"
-#       serviceAccountName = "docker-service-account"
-#       builder = {
-#         name = "docker-cluster-builder"
-#         kind = "ClusterBuilder"
-#       }
-#       source = {
-#         git = {
-#           url      = var.git_url
-#           revision = "${var.git_tag != "" ? var.git_tag : var.git_branch}"
-#         }
-#       }
-#     }
-#   }
-#   field_manager {
-#     name            = "terraform"
-#     force_conflicts = true
-#   }
-# }
+# Add delay to wait for the image to be uploaded into the registry
 
-# resource "kaniko_image" "image" {
-#   # Context: use tag if provided, otherwise use branch
-#   context     = "${local.formal_git_url}#${var.git_tag != "" ? "refs/tags/${var.git_tag}" : "refs/heads/${var.git_branch}"}"
-#   dockerfile  = var.dockerfile
-#   destination = "${var.registry_server}/${var.image}"
-
-#   git_username      = var.git_auth ? var.git_username : ""
-#   git_password      = var.git_auth ? var.git_password : ""
-#   registry_username = var.registry_auth ? var.registry_username : ""
-#   registry_password = var.registry_auth ? var.registry_password : ""
-
-#   always_run = true
-# }
+resource "time_sleep" "delay" {
+  create_duration = "300s"
+}
 
 module "image_pull_secrets" {
   count = var.registry_auth ? 1 : 0
 
-  depends_on = [resource.kubectl_manifest.no_container_image]
+  depends_on = [resource.time_sleep.delay]
 
   source    = "./modules/image-pull-secret"
   name      = local.name
@@ -83,7 +46,7 @@ module "image_pull_secrets" {
 ########
 
 module "deployment" {
-  depends_on = [resource.kubectl_manifest.no_container_image]
+  depends_on = [resource.time_sleep.delay]
 
   # disable wait for all pods be ready.
   #
@@ -110,7 +73,7 @@ module "deployment" {
 }
 
 module "service" {
-  depends_on = [resource.kubectl_manifest.no_container_image]
+  depends_on = [resource.time_sleep.delay]
 
   # Use local paths to avoid accessing external networks
   # This module comes from terraform registry "terraform-iaac/service/kubernetes 1.0.4"
@@ -173,7 +136,7 @@ module "ingress" {
 
 
 data "kubernetes_secret" "image_pull_secrets" {
-  depends_on = [module.image_pull_secrets]
+  depends_on = [resource.time_sleep.delay]
 
   metadata {
     name      = local.name
