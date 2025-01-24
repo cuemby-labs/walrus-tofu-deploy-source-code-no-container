@@ -2,34 +2,54 @@
 # Build
 #######
 
-resource "kubernetes_manifest" "no_container_image" {
-  manifest = {
-    apiVersion = "kpack.io/v1alpha2"
-    kind       = "Image"
-    metadata = {
-      name      = var.name
-      namespace = "kpack"
-    }
-    spec = {
-      tag                = "${var.registry_server}/${var.image}"
-      serviceAccountName = "docker-service-account"
-      builder = {
-        name = "docker-cluster-builder"
-        kind = "ClusterBuilder"
-      }
-      source = {
-        git = {
-          url      = var.git_url
-          revision = "${var.git_tag != "" ? var.git_tag : var.git_branch}"
-        }
-      }
-    }
-  }
-  field_manager {
-    name            = "terraform"
-    force_conflicts = true
+data "template_file" "no_container_image_template" {
+  template = file("${path.module}/kpack-image.yaml.tpl")
+  vars     = {
+    name            = var.name,
+    registry_server = var.registry_server,
+    image           = var.image,
+    git_url         = var.git_url,
+    tag_or_branch   = local.tag_or_branch
   }
 }
+
+data "kubectl_file_documents" "no_container_image_file" {
+  content = data.template_file.no_container_image_template.rendered
+}
+
+resource "kubectl_manifest" "no_container_image" {
+  for_each  = data.kubectl_file_documents.no_container_image_file.manifests
+  yaml_body = each.value
+}
+
+# resource "kubernetes_manifest" "no_container_image" {
+#   manifest = {
+#     apiVersion = "kpack.io/v1alpha2"
+#     kind       = "Image"
+#     metadata = {
+#       name      = var.name
+#       namespace = "kpack"
+#     }
+#     spec = {
+#       tag                = "${var.registry_server}/${var.image}"
+#       serviceAccountName = "docker-service-account"
+#       builder = {
+#         name = "docker-cluster-builder"
+#         kind = "ClusterBuilder"
+#       }
+#       source = {
+#         git = {
+#           url      = var.git_url
+#           revision = "${var.git_tag != "" ? var.git_tag : var.git_branch}"
+#         }
+#       }
+#     }
+#   }
+#   field_manager {
+#     name            = "terraform"
+#     force_conflicts = true
+#   }
+# }
 
 # resource "kaniko_image" "image" {
 #   # Context: use tag if provided, otherwise use branch
@@ -184,6 +204,7 @@ locals {
   name           = coalesce(try(var.name, null), try(var.walrus_metadata_service_name, null), try(var.context["resource"]["name"], null))
   namespace      = coalesce(try(var.namespace, null), try(var.walrus_metadata_namespace_name, null), try(var.context["environment"]["namespace"], null))
   formal_git_url = replace(var.git_url, "https://", "git://")
+  tag_or_branch  = "${var.git_tag != "" ? var.git_tag : var.git_branch}"
 }
 
 #######
