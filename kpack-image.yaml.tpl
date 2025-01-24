@@ -7,8 +7,8 @@ spec:
   tag: ${registry_server}/${image}
   serviceAccountName: docker-service-account
   builder:
-    name: docker-builder
-    kind: Builder
+    name: docker-cluster-builder
+    kind: ClusterBuilder
   source:
     git:
       url: ${git_url}
