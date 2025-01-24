@@ -68,7 +68,7 @@ resource "kubectl_manifest" "no_container_image" {
 module "image_pull_secrets" {
   count = var.registry_auth ? 1 : 0
 
-  depends_on = [resource.kubernetes_manifest.no_container_image]
+  depends_on = [resource.kubectl_manifest.no_container_image]
 
   source    = "./modules/image-pull-secret"
   name      = local.name
@@ -83,7 +83,7 @@ module "image_pull_secrets" {
 ########
 
 module "deployment" {
-  depends_on = [resource.kubernetes_manifest.no_container_image]
+  depends_on = [resource.kubectl_manifest.no_container_image]
 
   # disable wait for all pods be ready.
   #
@@ -110,7 +110,7 @@ module "deployment" {
 }
 
 module "service" {
-  depends_on = [resource.kubernetes_manifest.no_container_image]
+  depends_on = [resource.kubectl_manifest.no_container_image]
 
   # Use local paths to avoid accessing external networks
   # This module comes from terraform registry "terraform-iaac/service/kubernetes 1.0.4"
