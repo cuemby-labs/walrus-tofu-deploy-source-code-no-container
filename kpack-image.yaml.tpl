@@ -5,7 +5,7 @@ metadata:
   namespace: kpack
 spec:
   tag: ${registry_server}/${image}
-  serviceAccountName: docker-service-account
+  serviceAccountName: harbor-service-account
   builder:
     name: docker-cluster-builder
     kind: ClusterBuilder
