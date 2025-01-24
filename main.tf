@@ -11,7 +11,7 @@ resource "kubernetes_manifest" "no_container_image" {
       namespace = "kpack"
     }
     spec = {
-      tag                = "${registry_server}/${var.image}"
+      tag                = "${var.registry_server}/${var.image}"
       serviceAccountName = "docker-service-account"
       builder = {
         name = "docker-cluster-builder"
