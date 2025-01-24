@@ -58,14 +58,6 @@ components:
           x-walrus-ui:
             group: Basic
             order: 6
-        dockerfile:
-          title: Dockerfile
-          type: string
-          description: Path to the Dockerfile.
-          default: Dockerfile
-          x-walrus-ui:
-            group: Basic
-            order: 7
         registry_auth:
           title: Registry Auth
           type: boolean
@@ -73,7 +65,7 @@ components:
           default: false
           x-walrus-ui:
             group: Basic
-            order: 8
+            order: 7
         registry_server:
           title: Registry Server
           type: string
@@ -81,7 +73,7 @@ components:
           default: docker.io
           x-walrus-ui:
             group: Basic
-            order: 9
+            order: 8
         registry_username:
           title: Registry Username
           type: string
@@ -90,7 +82,7 @@ components:
           writeOnly: true
           x-walrus-ui:
             group: Basic
-            order: 10
+            order: 9
         registry_password:
           title: Registry Password
           type: string
@@ -99,14 +91,14 @@ components:
           writeOnly: true
           x-walrus-ui:
             group: Basic
-            order: 11
+            order: 10
         image:
           title: Image
           type: string
           description: Name of the image to be built and deployed.
           x-walrus-ui:
             group: Basic
-            order: 12
+            order: 11
         replicas:
           title: Replicas
           type: number
@@ -114,7 +106,7 @@ components:
           default: 1
           x-walrus-ui:
             group: Basic
-            order: 13
+            order: 12
         ports:
           title: Ports
           type: array
@@ -126,7 +118,7 @@ components:
           x-walrus-ui:
             colSpan: 12
             group: Basic
-            order: 14
+            order: 13
         env:
           title: Env
           type: object
@@ -137,7 +129,7 @@ components:
           x-walrus-ui:
             colSpan: 12
             group: Basic
-            order: 15
+            order: 14
         request_cpu:
           title: Request Cpu
           type: string
@@ -145,7 +137,7 @@ components:
           default: "0.1"
           x-walrus-ui:
             group: Basic
-            order: 16
+            order: 15
         request_memory:
           title: Request Memory
           type: string
@@ -153,7 +145,7 @@ components:
           default: 128Mi
           x-walrus-ui:
             group: Basic
-            order: 17
+            order: 16
         limit_cpu:
           title: Limit Cpu
           type: string
@@ -161,7 +153,7 @@ components:
           default: ""
           x-walrus-ui:
             group: Basic
-            order: 18
+            order: 17
         limit_memory:
           title: Limit Memory
           type: string
@@ -169,7 +161,7 @@ components:
           default: ""
           x-walrus-ui:
             group: Basic
-            order: 19
+            order: 18
         namespace:
           title: Namespace
           type: string
@@ -177,7 +169,7 @@ components:
           default: ""
           x-walrus-ui:
             group: Basic
-            order: 20
+            order: 19
         name:
           title: Name
           type: string
@@ -185,7 +177,7 @@ components:
           default: ""
           x-walrus-ui:
             group: Basic
-            order: 21
+            order: 20
         ingress_enabled:
           title: Ingress Enabled
           type: boolean
@@ -193,7 +185,7 @@ components:
           default: false
           x-walrus-ui:
             group: Basic
-            order: 22
+            order: 21
         ingress_tls_enabled:
           title: Ingress Tls Enabled
           type: boolean
@@ -201,7 +193,7 @@ components:
           default: false
           x-walrus-ui:
             group: Basic
-            order: 23
+            order: 22
         ingress_host:
           title: Ingress Host
           type: string
@@ -209,7 +201,7 @@ components:
           default: ""
           x-walrus-ui:
             group: Basic
-            order: 24
+            order: 23
         ingress_annotations:
           title: Ingress Annotations
           type: object
@@ -220,7 +212,7 @@ components:
           x-walrus-ui:
             colSpan: 12
             group: Basic
-            order: 25
+            order: 24
         ingress_class_name:
           title: Ingress Class Name
           type: string
@@ -228,7 +220,7 @@ components:
           default: nginx
           x-walrus-ui:
             group: Basic
-            order: 26
+            order: 25
         walrus_metadata_service_name:
           title: Walrus Metadata Service Name
           type: string
@@ -236,7 +228,7 @@ components:
           default: ""
           x-walrus-ui:
             group: Basic
-            order: 27
+            order: 26
         walrus_metadata_namespace_name:
           title: Walrus Metadata Namespace Name
           type: string
@@ -244,7 +236,7 @@ components:
           default: ""
           x-walrus-ui:
             group: Basic
-            order: 28
+            order: 27
       x-walrus-ui:
         groupOrder:
         - Basic
