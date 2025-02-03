@@ -23,15 +23,6 @@ resource "kubectl_manifest" "no_container_image" {
   yaml_body = each.value
 }
 
-
-# resource "kubectl_manifest" "no_container_image" {
-#   depends_on = [data.kubectl_file_documents.no_container_image_file]
-
-#   for_each  = nonsensitive(try(data.kubectl_file_documents.no_container_image_file.manifests, {}))
-#   yaml_body = each.value
-# }
-
-
 # Add delay to wait for the image to be uploaded into the registry
 
 resource "time_sleep" "delay" {
@@ -41,7 +32,7 @@ resource "time_sleep" "delay" {
 module "image_pull_secrets" {
   count = var.registry_auth ? 1 : 0
 
-  depends_on = [time_sleep.delay]
+  depends_on = [resource.time_sleep.delay]
 
   source    = "./modules/image-pull-secret"
   name      = local.name
@@ -56,7 +47,7 @@ module "image_pull_secrets" {
 ########
 
 module "deployment" {
-  depends_on = [time_sleep.delay]
+  depends_on = [resource.time_sleep.delay]
 
   # disable wait for all pods be ready.
   #
@@ -83,7 +74,7 @@ module "deployment" {
 }
 
 module "service" {
-  depends_on = [time_sleep.delay]
+  depends_on = [resource.time_sleep.delay]
 
   # Use local paths to avoid accessing external networks
   # This module comes from terraform registry "terraform-iaac/service/kubernetes 1.0.4"
