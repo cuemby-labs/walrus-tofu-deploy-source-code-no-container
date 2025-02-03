@@ -1,6 +1,16 @@
-#######
+#
+# Random number
+#
+
+resource "random_password" "random" {
+  length  = 4
+  special = false
+  upper   = false
+}
+
+#
 # Build
-#######
+#
 
 data "template_file" "no_container_image_template" {
   template = file("${path.module}/kpack-image.yaml.tpl")
@@ -9,7 +19,8 @@ data "template_file" "no_container_image_template" {
     registry_server = var.registry_server,
     image           = var.image,
     git_url         = var.git_url,
-    tag_or_branch   = local.tag_or_branch
+    tag_or_branch   = local.tag_or_branch,
+    random_value    = local.random_value
   }
 }
 
@@ -115,26 +126,6 @@ module "ingress" {
   }] : []
 }
 
-# resource "null_resource" "wait_for_url" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-
-#     status=$(curl -i  https://${var.ingress_host} | grep "HTTP")
-#       if [ "$status" = "" ]; then
-#         echo "Waiting for URL to become active and SSL certificate to be valid..."
-#         sleep 10
-#       else
-#         echo "URL is active and SSL certificate is valid, proceeding with execution."
-#         break
-#       fi
-#     done
-
-    
-#     EOT
-#   }
-# }
-
-
 data "kubernetes_secret" "image_pull_secrets" {
   depends_on = [resource.time_sleep.delay]
 
@@ -168,6 +159,7 @@ locals {
   namespace      = coalesce(try(var.namespace, null), try(var.walrus_metadata_namespace_name, null), try(var.context["environment"]["namespace"], null))
   formal_git_url = replace(var.git_url, "https://", "git://")
   tag_or_branch  = "${var.git_tag != "" ? var.git_tag : var.git_branch}"
+  random_value   = random_password.random.result
 }
 
 #######
