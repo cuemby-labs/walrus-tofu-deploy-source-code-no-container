@@ -149,7 +149,7 @@ locals {
   namespace      = coalesce(try(var.namespace, null), try(var.walrus_metadata_namespace_name, null), try(var.context["environment"]["namespace"], null))
   formal_git_url = replace(var.git_url, "https://", "git://")
   tag_or_branch  = "${var.git_tag != "" ? var.git_tag : var.git_branch}"
-  tag            = substr(var.image, length(var.image) - 4, 4)
+  tag            = substr(var.image, length(var.image) - 7, 7)
 }
 
 #######
