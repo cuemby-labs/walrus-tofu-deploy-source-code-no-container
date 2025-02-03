@@ -29,6 +29,8 @@ data "kubectl_file_documents" "no_container_image_file" {
 }
 
 resource "kubectl_manifest" "no_container_image" {
+  depends_on = [data.kubectl_file_documents.no_container_image_file]
+  
   for_each  = data.kubectl_file_documents.no_container_image_file.manifests
   yaml_body = each.value
 }
