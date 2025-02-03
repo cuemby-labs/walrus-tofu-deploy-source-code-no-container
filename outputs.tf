@@ -2,6 +2,11 @@
 # Contextual output
 #
 
+output "tag" {
+  value = substr(var.image, length(var.image) - 7, 7)
+  description = "Last 7 characters from the image value."
+}
+
 output "walrus_project_name" {
   value       = try(local.context["project"]["name"], null)
   description = "The name of project where deployed in Walrus."

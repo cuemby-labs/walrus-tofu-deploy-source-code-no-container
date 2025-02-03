@@ -1,7 +1,7 @@
 apiVersion: kpack.io/v1alpha2
 kind: Image
 metadata:
-  name: ${name}-${random_value}
+  name: ${name}-${tag}
   namespace: kpack
 spec:
   tag: ${registry_server}/${image}

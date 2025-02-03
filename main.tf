@@ -1,14 +1,4 @@
 #
-# Random number
-#
-
-resource "random_password" "random" {
-  length  = 4
-  special = false
-  upper   = false
-}
-
-#
 # Build
 #
 
@@ -20,35 +10,19 @@ data "template_file" "no_container_image_template" {
     image           = var.image,
     git_url         = var.git_url,
     tag_or_branch   = local.tag_or_branch,
-    random_value    = local.random_value
+    tag             = local.tag
   }
 }
 
-# data "kubectl_file_documents" "no_container_image_file" {
-#   content = data.template_file.no_container_image_template.rendered
-# }
-resource "local_file" "no_container_image_yaml" {
-  content  = data.template_file.no_container_image_template.rendered
-  filename = "${path.module}/no_container_image.yaml"
-}
-
 data "kubectl_file_documents" "no_container_image_file" {
-  content = local_file.no_container_image_yaml.content
+  content = data.template_file.no_container_image_template.rendered
 }
-
-# resource "kubectl_manifest" "no_container_image" {
-#   depends_on = [random_password.random]
-
-#   for_each  = data.kubectl_file_documents.no_container_image_file.manifests
-#   yaml_body = each.value
-# }
-
 
 resource "kubectl_manifest" "no_container_image" {
-  for_each  = try(data.kubectl_file_documents.no_container_image_file.manifests, {})
-
+  for_each  = data.kubectl_file_documents.no_container_image_file.manifests
   yaml_body = each.value
 }
+
 
 # resource "kubectl_manifest" "no_container_image" {
 #   depends_on = [data.kubectl_file_documents.no_container_image_file]
@@ -184,7 +158,7 @@ locals {
   namespace      = coalesce(try(var.namespace, null), try(var.walrus_metadata_namespace_name, null), try(var.context["environment"]["namespace"], null))
   formal_git_url = replace(var.git_url, "https://", "git://")
   tag_or_branch  = "${var.git_tag != "" ? var.git_tag : var.git_branch}"
-  random_value   = random_password.random.result
+  tag            = substr(var.image, length(var.image) - 4, 4)
 }
 
 #######
