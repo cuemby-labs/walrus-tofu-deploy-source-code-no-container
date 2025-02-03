@@ -24,14 +24,29 @@ data "template_file" "no_container_image_template" {
   }
 }
 
-data "kubectl_file_documents" "no_container_image_file" {
-  content = data.template_file.no_container_image_template.rendered
+# data "kubectl_file_documents" "no_container_image_file" {
+#   content = data.template_file.no_container_image_template.rendered
+# }
+resource "local_file" "no_container_image_yaml" {
+  content  = data.template_file.no_container_image_template.rendered
+  filename = "${path.module}/no_container_image.yaml"
 }
 
-resource "kubectl_manifest" "no_container_image" {
-  depends_on = [random_password.random]
+data "kubectl_file_documents" "no_container_image_file" {
+  content = local_file.no_container_image_yaml.content
+}
 
-  for_each  = data.kubectl_file_documents.no_container_image_file.manifests
+# resource "kubectl_manifest" "no_container_image" {
+#   depends_on = [random_password.random]
+
+#   for_each  = data.kubectl_file_documents.no_container_image_file.manifests
+#   yaml_body = each.value
+# }
+
+
+resource "kubectl_manifest" "no_container_image" {
+  for_each  = try(data.kubectl_file_documents.no_container_image_file.manifests, {})
+
   yaml_body = each.value
 }
 
