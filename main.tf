@@ -28,12 +28,20 @@ data "kubectl_file_documents" "no_container_image_file" {
   content = data.template_file.no_container_image_template.rendered
 }
 
+# resource "kubectl_manifest" "no_container_image" {
+#   depends_on = [data.kubectl_file_documents.no_container_image_file]
+
+#   for_each  = data.kubectl_file_documents.no_container_image_file.manifests
+#   yaml_body = each.value
+# }
+
 resource "kubectl_manifest" "no_container_image" {
   depends_on = [data.kubectl_file_documents.no_container_image_file]
-  
-  for_each  = data.kubectl_file_documents.no_container_image_file.manifests
+
+  for_each  = nonsensitive(try(data.kubectl_file_documents.no_container_image_file.manifests, {}))
   yaml_body = each.value
 }
+
 
 # Add delay to wait for the image to be uploaded into the registry
 
